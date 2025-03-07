@@ -1,0 +1,98 @@
+.PHONY: *
+
+help:
+	@echo  '---------------------------------------------------------------------------'
+	@echo  ' This Makefile that provides a convenient interface to run helper scripts.'
+	@echo  '---------------------------------------------------------------------------'
+	@echo  ''
+	@echo  '"make" targets:'
+	@echo  ''
+	@echo  '  help                  - Show this help'
+	@echo  '  create-state-bucket   - Create an encrypted, versioned, non-public S3'
+	@echo  '                          bucket for Terraform state'
+	@echo  '  destroy-state-bucket  - !!! Permanently destroy S3 state bucket !!!'
+	@echo  '  init                  - Run 'terraform init' using state bucket (default)'
+	@echo  '  plan                  - Run 'terraform plan' using selected workspace'
+	@echo  '  apply                 - Run 'terraform apply' using selected workspace'
+	@echo  '  delete-sage           - Delete SageMaker models/endpoints for cleanup'
+	@echo  ''
+
+# Default environment (e.g., dev, staging, prod)
+WORKSPACE ?= dev
+
+# AWS region for the bucket (can override this as needed)
+AWS_REGION ?= us-east-2
+
+# Generate a random suffix (8 hex characters)
+RANDOM_SUFFIX := $(shell openssl rand -hex 4)
+
+# Construct the state bucket name, e.g., esm-partner-dev-364ac8fd
+STATE_BUCKET_NAME := esm-partner-$(WORKSPACE)-$(RANDOM_SUFFIX)
+
+create-state-bucket-config:
+	# @sed -e "s/STATE_BUCKET/$(STATE_BUCKET_NAME)/g" -e "s/AWS_REGION/$(AWS_REGION)/g" state-bucket-template.yaml > state-bucket-config.yaml
+	@sed -e "s/WORKSPACE/$(WORKSPACE)/g" \
+	    -e "s/AWS_REGION/$(AWS_REGION)/g" \
+		-e "s/STATE_BUCKET_NAME/$(STATE_BUCKET_NAME)/g" backend-template.config > backend.config
+
+# Create an encrypted, versioned, non-public S3 bucket for Terraform state
+create-state-bucket: create-state-bucket-config
+	@echo "Creating state bucket: $(STATE_BUCKET_NAME)"
+	aws s3api create-bucket --bucket $(STATE_BUCKET_NAME) --region $(AWS_REGION) --create-bucket-configuration LocationConstraint=$(AWS_REGION)
+	@echo "Enabling encryption on bucket: $(STATE_BUCKET_NAME)"
+	aws s3api put-bucket-encryption --bucket $(STATE_BUCKET_NAME) --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
+	@echo "Enabling versioning on bucket: $(STATE_BUCKET_NAME)"
+	aws s3api put-bucket-versioning --bucket $(STATE_BUCKET_NAME) --versioning-configuration Status=Enabled
+	@echo "Blocking public access on bucket: $(STATE_BUCKET_NAME)"
+	aws s3api put-public-access-block --bucket $(STATE_BUCKET_NAME) --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+	@echo "Bucket $(STATE_BUCKET_NAME) created and configured."
+
+# Destroy (delete) the state bucket. CAREFUL! This will permanently delete the bucket.
+destroy-state-bucket:
+	@if [ "$(WORKSPACE)" != "dev" ]; then \
+		echo "Error: destroy-state-bucket can only be run in the 'dev' workspace, not in '$(WORKSPACE)'"; \
+		exit 1; \
+	fi
+	@echo "Destroying state bucket..."
+	@# Extract the bucket name from backend.config
+	@BUCKET_NAME=`awk -F\" '/^bucket/ {print $$2}' backend.config 2>/dev/null`; \
+	echo "Using bucket: $$BUCKET_NAME"; \
+	aws s3api delete-objects \
+		--bucket $$BUCKET_NAME \
+		--delete "`aws s3api list-object-versions \
+			--bucket "$$BUCKET_NAME" \
+			--output=json \
+			--query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}'`"; \
+	aws s3 rb s3://$$BUCKET_NAME --force
+
+# Existing targets for startup and Terraform operations
+
+init:
+	terraform init -backend-config=backend.config
+
+set-workspace:
+	terraform workspace select $(WORKSPACE)
+
+plan: set-workspace
+	terraform plan
+
+apply: set-workspace
+	@echo "Deploying $(WORKSPACE)"
+	terraform apply
+
+apply-ci:
+	@echo "Deploying $(WORKSPACE)"
+	terraform init -input=false -no-color
+	terraform apply -auto-approve
+
+# Delete SageMaker models/endpoints for cleanup
+delete-sage:
+	aws sagemaker delete-model --model-name evolutionaryscale-esm3-small-2024-03 || true
+	aws sagemaker delete-model --model-name evolutionaryscale-esm3-open-2024-03 || true
+	aws sagemaker delete-model --model-name evolutionaryscale-esm3-medium-2024-03 || true
+	aws sagemaker delete-endpoint-config --endpoint-config-name esm3-dev-config-esm3-small-2024-03 || true
+	aws sagemaker delete-endpoint-config --endpoint-config-name esm3-dev-config-esm3-open-2024-03 || true
+	aws sagemaker delete-endpoint-config --endpoint-config-name esm3-dev-config-esm3-medium-2024-03 || true
+	aws sagemaker delete-endpoint --endpoint-name esm3-dev-endpoint-esm3-small-2024-03 || true
+	aws sagemaker delete-endpoint --endpoint-name esm3-dev-endpoint-esm3-open-2024-03 || true
+	aws sagemaker delete-endpoint --endpoint-name esm3-dev-endpoint-esm3-medium-2024-03 || true
