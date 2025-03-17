@@ -45,6 +45,7 @@ variable "private_subnet_cidrs" {
   description = "List of CIDR blocks for private subnets in the new VPC"
   type        = list(string)
   default     = ["172.16.1.0/24", "172.16.2.0/24"]
+  # default     = ["172.16.0.0/24", "172.16.1.0/24"]
 } 
 
 # variable "enable_internet_access" {
@@ -182,6 +183,18 @@ locals {
 # ##########################################
 # # ECR
 # ##########################################
+# resource "aws_ecr_repository" "esm_partner_ecr" {
+#   name                 = "esm-partner-${var.environment}-ecr"
+#   image_tag_mutability = "MUTABLE"  # Change to "IMMUTABLE" if you want to prevent retagging.
+
+#   encryption_configuration {
+#     encryption_type = "AES256"
+#   }
+
+#   tags = var.tags
+# }
+
+# TODO: remove
 resource "aws_ecr_repository" "esm_partner_ecr" {
   name                 = "esm-partner-${var.environment}"
   image_tag_mutability = "MUTABLE"  # Change to "IMMUTABLE" if you want to prevent retagging.
@@ -302,6 +315,34 @@ resource "aws_iam_role_policy_attachment" "sagemaker_execution_policy" {
 #   }
 
 #   tags = var.tags
+# }
+
+# resource "aws_sagemaker_domain" "example" {
+#   domain_name = "example"
+#   auth_mode   = "IAM"
+#   vpc_id      = aws_vpc.example.id
+#   subnet_ids  = [aws_subnet.example.id]
+
+#   default_user_settings {
+#     execution_role = aws_iam_role.example.arn
+#   }
+# }
+
+# resource "aws_iam_role" "example" {
+#   name               = "example"
+#   path               = "/"
+#   assume_role_policy = data.aws_iam_policy_document.example.json
+# }
+
+# data "aws_iam_policy_document" "example" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
+
+#     principals {
+#       type        = "Service"
+#       identifiers = ["sagemaker.amazonaws.com"]
+#     }
+#   }
 # }
 
 # ##########################################
