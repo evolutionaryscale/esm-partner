@@ -40,10 +40,9 @@ STATE_BUCKET_NAME := esm-partner-$(WORKSPACE)-$(RANDOM_SUFFIX)
 BACKEND_CONFIG ?= backend.config
 
 create-state-bucket-config:
-	# @sed -e "s/STATE_BUCKET/$(STATE_BUCKET_NAME)/g" -e "s/AWS_REGION/$(AWS_REGION)/g" state-bucket-template.yaml > state-bucket-config.yaml
 	@sed -e "s/WORKSPACE/$(WORKSPACE)/g" \
 	    -e "s/AWS_REGION/$(AWS_REGION)/g" \
-		-e "s/STATE_BUCKET_NAME/$(STATE_BUCKET_NAME)/g" backend-template.config > $(BACKEND_CONFIG)
+		-e "s/STATE_BUCKET_NAME/$(STATE_BUCKET_NAME)/g" templates/backend-template.config > $(BACKEND_CONFIG)
 
 # Create an encrypted, versioned, non-public S3 bucket for Terraform state
 create-state-bucket: create-state-bucket-config
