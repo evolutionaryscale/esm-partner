@@ -14,17 +14,23 @@
 ###########################
 # Variables
 ###########################
+variable "sagemaker_model_name" {
+  description = "Name of the model in SageMaker."
+  type        = string
+  default     = "Model-ESMC-300M-1"
+}
+
 variable "endpoint_name" {
   description = "Name for the SageMaker endpoint."
   type        = string
   default     = "Endpoint-ESMC-300M-1"
 }
 
-variable "execution_role_arn" {
-  description = "ARN of the SageMaker execution role."
-  type        = string
-  default     = "arn:aws:iam::577638386256:role/service-role/SageMaker-ExecutionRole-20250312T154511"
-}
+# variable "execution_role_arn" {
+#   description = "ARN of the SageMaker execution role."
+#   type        = string
+#   default     = "arn:aws:iam::577638386256:role/service-role/SageMaker-ExecutionRole-20250312T154511"
+# }
 
 variable "model_package" {
   description = "ARN of the model package."
@@ -50,12 +56,40 @@ variable "instance_count" {
 #   default     = "us-east-2"
 # }
 
+##########################################
+# IAM for SageMaker
+##########################################
+
+data "aws_iam_policy_document" "sagemaker_assume_role_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = [
+        "sagemaker.amazonaws.com"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "sagemaker_execution_role" {
+  name               = "${var.iam_role_name_prefix}-sagemaker-exec-${var.environment}"
+  assume_role_policy = data.aws_iam_policy_document.sagemaker_assume_role_policy.json
+  tags               = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker_execution_policy" {
+  role       = aws_iam_role.sagemaker_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+}
+
 ###########################
 # SageMaker Model
 ###########################
 resource "aws_sagemaker_model" "model" {
-  name                   = "Model-ESMC-300M-1"
-  execution_role_arn     = var.execution_role_arn
+  name                     = var.sagemaker_model_name
+  execution_role_arn       = aws_iam_role.sagemaker_execution_role.arn
   enable_network_isolation = true
 
   primary_container {
@@ -70,11 +104,11 @@ resource "aws_sagemaker_endpoint_configuration" "endpoint_config" {
   name = "EndpointConfig-ESMC-300M-1"
 
   production_variants {
-    variant_name                   = "variant-1"
-    model_name                     = aws_sagemaker_model.model.name
-    initial_instance_count         = var.instance_count
-    instance_type                  = var.instance_type
-    initial_variant_weight         = 1
+    variant_name                           = "variant-1"
+    model_name                             = aws_sagemaker_model.model.name
+    initial_instance_count                 = var.instance_count
+    instance_type                          = var.instance_type
+    initial_variant_weight                 = 1
     model_data_download_timeout_in_seconds = 3600
   }
 }
@@ -83,7 +117,7 @@ resource "aws_sagemaker_endpoint_configuration" "endpoint_config" {
 # SageMaker Endpoint
 ###########################
 resource "aws_sagemaker_endpoint" "endpoint" {
-  name        = var.endpoint_name
+  name                 = var.endpoint_name
   endpoint_config_name = aws_sagemaker_endpoint_configuration.endpoint_config.name
 }
 
@@ -108,4 +142,9 @@ output "endpoint_config_name" {
 output "endpoint_name" {
   description = "Name of the SageMaker endpoint."
   value       = aws_sagemaker_endpoint.endpoint.name
+}
+
+output "sagemaker_execution_role" {
+  description = "Name of the SageMaker IAM execution role."
+  value       = aws_iam_role.sagemaker_execution_role.name
 }
