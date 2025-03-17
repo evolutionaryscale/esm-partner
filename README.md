@@ -2,6 +2,8 @@
 
 **esm-partner** is a dedicated repository for enterprise partners to collaboratively deploy, manage, and customize cloud infrastructure and analytical tools on cloud service providers (CSPs). It provides Infrastructure as Code (IaC) and sample resources that can be easily integrated into your environment, enabling a secure, scalable, and isolated deployment that meets your IT standards while helping us maintain a unified product.
 
+While we encourage contributions, we recognize that commercial partners may prefer to maintain private forks to protect proprietary details.
+
 ## Overview
 
 This repository is designed to be a living, collaborative hub where our partners and internal teams can:
@@ -10,7 +12,7 @@ This repository is designed to be a living, collaborative hub where our partners
   Use parameterized Terraform configurations for VPCs, networking, IAM, SageMaker endpoints, and GPU-enabled ECS capacity providers.
 
 - **Collaborate on Customizations:**  
-  Customize configurations in a dedicated area without splintering our core product. While we encourage contributions, we recognize that commercial partners may prefer to maintain private forks to protect proprietary details.
+  Provide a space to customize configurations in a dedicated area to minimize core product splintering.
 
 - **Access Shared Analytical Tools:**  
   Explore and extend sample Jupyter notebooks and other resources to benchmark models and perform advanced data analysis.
@@ -49,9 +51,9 @@ This repository is designed to be a living, collaborative hub where our partners
 ├── notebooks/
 │   ├── examples/          # Sample notebooks and analytical tools.
 │   └── docs/              # Notebook usage guides.
-├── customers/
-│   ├── customerA/         # Customer-specific configurations and localizations.
-│   └── customerB/         # Additional customer-specific customizations.
+├── partners/
+│   ├── partnerA/         # Partner-specific configurations and localizations.
+│   └── partnerB/         # Additional partner-specific customizations.
 ├── tests/
 │   ├── unit/              # Unit tests for individual modules.
 │   ├── integration/       # Integration tests that deploy resources and run happy-path scenarios.
@@ -85,7 +87,9 @@ We’re committed to making this repository a collaborative space:
 
 ## Getting Started
 
-1. **Install Prerequisites:**
+1. Provision a new, vanilla, isolated AWS account within your organizations IT security peremitier.
+
+2. **Install Prerequisites:**
 
 - [tfenv](https://github.com/tfutils/tfenv)
 - [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -93,24 +97,47 @@ We’re committed to making this repository a collaborative space:
 
 (We recommend using `tfenv` to manage Terraform versions.)
 
-2. **Clone the Repository:**
+3. **Clone the Repository:**
    ```bash
    git clone git@github.com:evolutionaryscale/esm-partner.git
    cd esm-partner
     ```
 
-3.	Configure Your Environment:
-- Edit the appropriate variable files (e.g., terraform.tfvars or environment-specific files) to set your deployment parameters (such as project_name, environment, and network settings).
-- If you are a partner, you might create a fork of this public repo and maintain your custom configurations there.
+4.	Configure Your Environment:
+- Edit the appropriate variable files (e.g., terraform.tfvars or environment-specific files) to set your deployment parameters (such as project_name, environment, and network settings). Set environment variables (such as AWS_PROFILE).
+- If you are a partner, you can put your modifications into the partners/ tree, or you might choose to create a fork of this public repo and maintain your custom configurations there.
 
-4.	Deploy the Infrastructure:
+5.	Deploy the Infrastructure:
 Use the provided Makefile targets (e.g., make init, make plan, and make apply) to deploy the infrastructure.
 
-5.	Explore & Customize:
+```bash
+cd iac/terraform
+make help                  # to get info on make targets
+make create-state-bucket   # create tf state S3 bucket
+make init                  # initialize tf state in S3
+terraform plan
+terraform apply
+```
+
+5. Use `notebooks/ESMHelloWorldNotebook.ipynb` to verify that your SageMaker Endpoint is accessible and responding with data.
+
+6. Explore & Customize:
 - Review the sample notebooks in the notebooks/examples/ directory.
 - Check the documentation in docs/ for detailed setup and usage guides.
 
-6. **Profit!**
+7. **Profit!**
+
+## Cleaning up
+
+Reverse the setup process. BEWARE: These destroy state and cannot (easily) be reversed/recovered.
+
+```bash
+cd iac/terraform
+make destroy-state-bucket
+make clean                  # clean up local tf state
+```
+
+All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
 
 ---
 
