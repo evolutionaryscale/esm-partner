@@ -155,9 +155,7 @@ We’re committed to making this repository a collaborative space:
 6. **Validate:**
 
 - Use the sample notebook (e.g., `notebooks/ESMHelloWorldNotebook.ipynb`) to verify that your SageMaker Endpoint is accessible and responding correctly.
-
 - Check outputs (such as the endpoint URL) from Terraform to confirm that resources were created as expected.
-
 - Modify configurations in your terraform.tfvars file as needed and re-run terraform apply to update your environment.
 
 7. **Explore & Customize:**
