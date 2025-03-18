@@ -87,15 +87,15 @@ We’re committed to making this repository a collaborative space:
 
 ## Getting Started
 
-1. Provision a new, vanilla, isolated AWS account within your organizations IT security peremitier.
+1. **Provision a New AWS Account:**
+
+- Set up a new, isolated AWS account within your organization’s IT security framework. This ensures that your deployments are separate and meet your security and compliance requirements.
 
 2. **Install Prerequisites:**
 
-- [tfenv](https://github.com/tfutils/tfenv)
-- [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-
-(We recommend using `tfenv` to manage Terraform versions.)
+- **tfenv:** Install [tfenv](https://github.com/tfutils/tfenv) from GitHub to manage Terraform versions. (We recommend using tfenv to ensure you’re running a compatible Terraform version.)
+- **Terraform CLI:** Follow the [Terraform installation guide](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+- **AWS CLI:** Install using the [AWS CLI instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
 3. **Clone the Repository:**
    ```bash
@@ -103,33 +103,69 @@ We’re committed to making this repository a collaborative space:
    cd esm-partner
     ```
 
-4.	Configure Your Environment:
-- Edit the appropriate variable files (e.g., terraform.tfvars or environment-specific files) to set your deployment parameters (such as project_name, environment, and network settings). Set environment variables (such as AWS_PROFILE).
-- If you are a partner, you can put your modifications into the partners/ tree, or you might choose to create a fork of this public repo and maintain your custom configurations there.
+4.	**Configure Your Environment:**
 
-5.	Deploy the Infrastructure:
-Use the provided Makefile targets (e.g., make init, make plan, and make apply) to deploy the infrastructure.
+- Variable Overrides:
 
-```bash
-cd iac/terraform
-export AWS_PROFILE=<profile_name>
-make help                  # to get info on make targets
-make create-state-bucket   # create tf state S3 bucket
-make init                  # initialize tf state in S3
-terraform plan
-terraform apply            # EC2 charges start here!
-```
+  Review and customize your deployment parameters by editing the terraform.tfvars file. This file is where you can override defaults for variables such as:
 
-5. Use `notebooks/ESMHelloWorldNotebook.ipynb` to verify that your SageMaker Endpoint is accessible and responding with data.
+	-	`project_name`
+	-	environment (e.g., `dev`, `staging`, `prod`)
+	-	`region`
+	-	SageMaker settings (`selected_model`, `instance_type`, `instance_count`, etc.)
 
-6. Explore & Customize:
+  For example, to select a different model from the external YAML file, update the selected_model variable in `terraform.tfvars`:
+
+  ```
+  selected_model = "ESMC-600M"
+  ```
+
+  You can also override variables via command-line flags if needed:
+
+  ```bash
+  terraform apply -var="environment=staging" -var="selected_model=ESMC-600M"
+  ```
+
+- AWS Credentials & Profile:
+
+  Set the `AWS_PROFILE` environment variable to match your configured profile:
+
+  ```bash
+  export AWS_PROFILE=<your_profile_name>
+  ```
+
+- Custom Partner Configurations:
+
+  If you are a partner, you can place your custom modifications in the `partners/` directory or create a fork of this repository. This lets you maintain partner-specific settings independent of the core product.
+
+
+5.	**Deploy the Infrastructure:**
+
+  Use the provided Makefile targets (e.g., `make init`) to deploy the infrastructure.
+
+  ```bash
+  cd iac/terraform
+  make help                  # to get info on make targets
+  make create-state-bucket   # create tf state S3 bucket
+  make init                  # initialize tf state in S3
+  terraform plan
+  terraform apply            # EC2 charges start here!
+  ```
+
+6. **Validate:**
+
+- Use the sample notebook (e.g., `notebooks/ESMHelloWorldNotebook.ipynb`) to verify that your SageMaker Endpoint is accessible and responding correctly.
+
+- Check outputs (such as the endpoint URL) from Terraform to confirm that resources were created as expected.
+
+- Modify configurations in your terraform.tfvars file as needed and re-run terraform apply to update your environment.
+
+7. **Explore & Customize:**
+
 - Review the sample notebooks in the notebooks/examples/ directory.
 - Check the documentation in docs/ for detailed setup and usage guides.
 
-7. **Profit!**
-
-**Note: Creating a SageMaker Endpoint provisions a GPU-enabled EC2 instance. As a result, (1) the Terraform apply operation may take 10–20 minutes (or more) to complete, and (2) once the endpoint is active, you’ll immediately incur costs for the EC2 instance. Be sure to delete the SageMaker Endpoint when it’s no longer needed to stop these charges!**
-
+8. **Profit!**
 
 
 ## Cleaning up
@@ -145,6 +181,19 @@ make clean                  # destroy local tf state
 ```
 
 All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
+
+## Additional Notes:
+- **Model Selection:**
+
+  Model definitions are maintained in a separate YAML file (e.g., `models.yaml`). To select a model, update the selected_model variable in your `terraform.tfvars` file.
+
+- **Cost Management:**
+
+  Creating a SageMaker Endpoint provisions a GPU-enabled EC2 instance, which may take 10–20 minutes (or longer) to deploy. Once active, you begin incurring hourly costs. Delete the endpoint when not in use to stop charges.
+
+- **Parameterization:**
+
+  All important configuration values (such as region, instance types, model ARNs, etc.) can be overridden in `terraform.tfvars` or via command-line flags to suit your specific environment and Terraform workspace.
 
 ---
 
