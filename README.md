@@ -112,11 +112,12 @@ Use the provided Makefile targets (e.g., make init, make plan, and make apply) t
 
 ```bash
 cd iac/terraform
+export AWS_PROFILE=<profile_name>
 make help                  # to get info on make targets
 make create-state-bucket   # create tf state S3 bucket
 make init                  # initialize tf state in S3
 terraform plan
-terraform apply
+terraform apply            # EC2 charges start here!
 ```
 
 5. Use `notebooks/ESMHelloWorldNotebook.ipynb` to verify that your SageMaker Endpoint is accessible and responding with data.
@@ -127,14 +128,20 @@ terraform apply
 
 7. **Profit!**
 
+**Note: Creating a SageMaker Endpoint provisions a GPU-enabled EC2 instance. As a result, (1) the Terraform apply operation may take 10–20 minutes (or more) to complete, and (2) once the endpoint is active, you’ll immediately incur costs for the EC2 instance. Be sure to delete the SageMaker Endpoint when it’s no longer needed to stop these charges!**
+
+
+
 ## Cleaning up
 
 Reverse the setup process. BEWARE: These destroy state and cannot (easily) be reversed/recovered.
 
 ```bash
 cd iac/terraform
-make destroy-state-bucket
-make clean                  # clean up local tf state
+terraform plan -destroy
+terraform destroy           # deconstruct infra
+make destroy-state-bucket   # destroy remote tf state
+make clean                  # destroy local tf state
 ```
 
 All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
