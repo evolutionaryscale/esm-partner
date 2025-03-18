@@ -93,7 +93,7 @@ We’re committed to making this repository a collaborative space:
 
 2. **Install Prerequisites:**
 
-- **tfenv:** Install [tfenv](https://github.com/tfutils/tfenv) from GitHub to manage Terraform versions. (We recommend using tfenv to ensure you’re running a compatible Terraform version.)
+- **tfenv:** Install [tfenv](https://github.com/tfutils/tfenv) from GitHub to manage Terraform versions. (We recommend using `tfenv` to ensure you’re running a compatible Terraform version.)
 - **Terraform CLI:** Follow the [Terraform installation guide](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
 - **AWS CLI:** Install using the [AWS CLI instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
@@ -118,7 +118,7 @@ We’re committed to making this repository a collaborative space:
 	-	set environment (e.g., `dev`, `staging`, `prod`)
 	-	set region (e.g., `us-east-1`, `us-west-2`)
 
-  Specify the model(s) you want to run by setting the `selected_models` variable. The simplest config is a simple selector for one of the models defined in `models.yaml`:
+  Specify the model(s) you want to run by setting the `selected_models` variable. The basic config is a simple selector for one of the models defined in `models.yaml`, which will select that model and use defaults for all other config values:
 
   ```
   selected_models = {
