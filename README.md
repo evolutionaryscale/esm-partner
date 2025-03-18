@@ -110,6 +110,7 @@ We’re committed to making this repository a collaborative space:
   Use the provided template file to create a local `terraform.tfvars` file in which you override variables and select your model(s):
 
   ```bash
+  cd iac/terraform
   cp templates/terraform-tfvars.txt terraform.tfvars
   ```
 
