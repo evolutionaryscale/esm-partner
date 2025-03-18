@@ -134,7 +134,7 @@ terraform apply            # EC2 charges start here!
 
 ## Cleaning up
 
-Reverse the setup process. BEWARE: These destroy state and cannot (easily) be reversed/recovered.
+Reverse the setup process. BEWARE: These commands *DESTROY STATE* and cannot necessarily be reversed/recovered.
 
 ```bash
 cd iac/terraform
