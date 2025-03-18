@@ -107,23 +107,33 @@ We’re committed to making this repository a collaborative space:
 
 - Variable Overrides:
 
-  Review and customize your deployment parameters by editing the terraform.tfvars file. This file is where you can override defaults for variables such as:
+  Use the provided template file to create a local `terraform.tfvars` file in which you override variables and select your model(s):
 
-	-	`project_name`
-	-	environment (e.g., `dev`, `staging`, `prod`)
-	-	`region`
-	-	SageMaker settings (`selected_model`, `instance_type`, `instance_count`, etc.)
+  ```bash
+  cp templates/terraform-tfvars.txt terraform.tfvars
+  ```
 
-  For example, to select a different model from the external YAML file, update the selected_model variable in `terraform.tfvars`:
+  Review and customize deployment parameters by editing the `terraform.tfvars` file. This file is where you can override defaults for variables such as:
+
+	-	set environment (e.g., `dev`, `staging`, `prod`)
+	-	set region (e.g., `us-east-1`, `us-west-2`)
+
+  Specify the model(s) you want to run by setting the `selected_models` variable. The simplest config is a simple selector for one of the models defined in `models.yaml`:
 
   ```
-  selected_model = "ESMC-600M"
+  selected_models = {
+    "exploratory_model" = {
+      selector       = "ESMC-300M"
+    }
+  }
   ```
+
+  Adding additional models to this map will bring up additional SageMaker Endpoints. Fields in `models.yaml` can also optionally be overridden using this variable.
 
   You can also override variables via command-line flags if needed:
 
   ```bash
-  terraform apply -var="environment=staging" -var="selected_model=ESMC-600M"
+  terraform apply -var="environment=staging"
   ```
 
 - AWS Credentials & Profile:
