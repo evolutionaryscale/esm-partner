@@ -14,6 +14,7 @@ help:
 	@echo  '  init                  - Run 'terraform init' using remote state bucket'
 	@echo  '  plan                  - Run 'terraform plan' using selected workspace'
 	@echo  '  apply                 - Run 'terraform apply' using selected workspace'
+	@echo  '  delete-endpoints      - Delete SageMaker endpoints (dealloc instances)'
 	@echo  '  delete-sage           - Delete SageMaker models/endpoints for cleanup'
 	@echo  ''
 	@echo  'CAREFUL: TARGET ACTIONS THAT CANNOT BE UNDONE!'
@@ -105,6 +106,12 @@ clean:
 	fi
 	@echo "Removing local terraform state files..."
 	rm -R .terraform .terraform.lock.hcl
+
+delete-endpoints:
+	@for endpoint in `terraform output -json | jq -r '.sagemaker_endpoints.value | to_entries[] | .value.endpoint_name'`; do \
+	  echo "Deleting endpoint $$endpoint"; \
+	  aws sagemaker delete-endpoint --endpoint-name "$$endpoint" --region $(AWS_REGION); \
+	done
 
 # Delete SageMaker models/endpoints for cleanup
 delete-sage:
