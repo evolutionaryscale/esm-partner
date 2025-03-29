@@ -1,0 +1,39 @@
+# Variables to specify models and endpoints
+# 
+# Make a copy of this file to the root module directory with the
+# name: terraform.tfvars. Edit to add/remove model/endpoint instances.
+
+# Format:
+#
+# Simplest config is just the selector:
+#
+# selected_models = {
+#   "model_config_name" = {
+#     selector = "<selector>"     # choose from models list in models.yaml
+#   }
+# }
+#
+# Override selective values from models.yaml:
+#
+# selected_models = {
+#   "model_config_name" = {
+#     selector = "<selector>"     # choose from models list in models.yaml
+#     instance_type = "<type>"    # must match the model requirements
+#     instance_count = <int>      # number of instances to run
+#   }
+# }
+
+selected_models = {
+  "prototype_model" = {
+    selector        = "ESMC-300M"
+    instance_type   = "ml.g5.2xlarge"
+  },
+  "performance_model" = {
+    selector          = "ESMC-300M"
+    instance_type     = "ml.g5.2xlarge"
+  },
+    "test_model" = {
+      selector        = "ESMC-600M"
+      instance_type   = "ml.g6e.4xlarge"
+    }
+}

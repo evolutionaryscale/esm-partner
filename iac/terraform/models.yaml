@@ -1,0 +1,15 @@
+models:
+  ESMC-300M:
+    sagemaker_model_name: "Model-ESMC-300M-1"
+    forge_model_name: esmc-300m-2024-12
+    endpoint_name: "Endpoint-ESMC-300M-1"
+    model_package: "arn:aws:sagemaker:us-east-2:057799348421:model-package/esmc-300m-2024-12-6ad677e3dc243fb1b56e5787b7f93b53"
+    instance_type: "ml.g5.2xlarge"
+    instance_count: 1
+  ESMC-600M:
+    sagemaker_model_name: "Model-ESMC-600M-1"
+    forge_model_name: esmc-600m-2024-12
+    endpoint_name: "Endpoint-ESMC-600M-1"
+    model_package: "arn:aws:sagemaker:us-east-2:057799348421:model-package/esmc-600m-EXAMPLE"
+    instance_type: "ml.g5.4xlarge"
+    instance_count: 1
