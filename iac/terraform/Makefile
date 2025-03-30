@@ -15,7 +15,6 @@ help:
 	@echo  '  plan                  - Run 'terraform plan' using selected workspace'
 	@echo  '  apply                 - Run 'terraform apply' using selected workspace'
 	@echo  '  delete-endpoints      - Delete SageMaker endpoints (dealloc instances)'
-	@echo  '  delete-sage           - Delete SageMaker models/endpoints for cleanup'
 	@echo  ''
 	@echo  'CAREFUL: TARGET ACTIONS THAT CANNOT BE UNDONE!'
 	@echo  '  destroy-state-bucket  - !!! Permanently destroy S3 state bucket !!!'
