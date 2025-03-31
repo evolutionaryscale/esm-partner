@@ -33,3 +33,15 @@ variable "region" {
   type        = string
   default     = "us-east-2"
 }
+
+variable "enable_shared_service_account" {
+  description = "Enable creation of a shared service account for accessing SageMaker endpoints."
+  type        = bool
+  default     = false
+}
+
+variable "shared_service_account_name" {
+  description = "Optional: Override the default name for the shared service account."
+  type        = string
+  default     = ""
+}
