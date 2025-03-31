@@ -1,19 +1,16 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 5.93.0, < 6.0.0"
+# Terraform configuration for deploying SageMaker models and endpoints
+# using the ESM Partner module.
+
+provider "aws" {
+  region = "us-east-2"
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      Project     = "esm-partner"
     }
   }
 }
-#   default_tags {
-#     # tags = var.tags
-#     tags = {
-#       Environment = "dev"
-#       Project     = "esm-partner"
-#     }
-#   }
-# }
 
 module "esm_partner" {
   # source = "git::https://github.com/evolutionaryscale/esm-partner.git?ref=v1.0.0"
@@ -27,7 +24,7 @@ module "esm_partner" {
     },
     # "performance_model" = {
     #   selector       = "ESMC-300M"
-    #   instance_type  = "ml.g5.4xlarge"
+    #   instance_type  = "ml.g5.2xlarge" # "ml.g5.4xlarge"
     #   instance_count = 1
     # },
     # "test_model" = {
@@ -44,6 +41,8 @@ module "esm_partner" {
     Environment = "dev"
     Project     = "esm-partner"
   }
+
+  enable_shared_service_account = true
 }
 
 output "sagemaker_endpoints" {
@@ -54,4 +53,20 @@ output "sagemaker_endpoints" {
 output "sagemaker_execution_role" {
   description = "Name of the SageMaker IAM execution role."
   value       = module.esm_partner.sagemaker_execution_role
+}
+
+output "shared_service_user_name" {
+  description = "The name of the shared service IAM user, if created."
+  value       = module.esm_partner.shared_service_user_name
+}
+
+output "shared_service_user_access_key_id" {
+  description = "The access key ID for the shared service IAM user, if created."
+  value       = module.esm_partner.shared_service_user_access_key_id
+}
+
+output "shared_service_user_secret_access_key" {
+  description = "The secret access key for the shared service IAM user, if created."
+  value       = module.esm_partner.shared_service_user_secret_access_key
+  sensitive   = true
 }

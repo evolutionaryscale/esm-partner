@@ -1,3 +1,10 @@
+# Terraform module to create SageMaker model endpoints.
+#
+# This module deploys SageMaker models and endpoints based on the provided
+# configuration. It also creates an IAM role for SageMaker execution and
+# optionally a shared service account for accessing the endpoints.
+
+
 locals {
   # Decode the models catalog from models.yaml.
   models_menu = yamldecode(file("${path.module}/models.yaml")).models

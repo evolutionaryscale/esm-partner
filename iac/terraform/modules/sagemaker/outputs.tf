@@ -15,3 +15,21 @@ output "sagemaker_execution_role" {
   description = "Name of the SageMaker IAM execution role."
   value       = aws_iam_role.sagemaker_execution_role.name
 }
+
+# Outputs: Be cautious when outputting secrets.
+output "shared_service_user_name" {
+  description = "The name of the shared service IAM user, if created."
+  # value       = var.enable_shared_service_account ? aws_iam_user.shared_service_user[0].name : ""
+  value = var.enable_shared_service_account ? aws_iam_user.shared_service_user.name : ""
+}
+
+output "shared_service_user_access_key_id" {
+  description = "The access key ID for the shared service IAM user, if created."
+  value       = var.enable_shared_service_account ? aws_iam_access_key.shared_service_access_key.id : ""
+}
+
+output "shared_service_user_secret_access_key" {
+  description = "The secret access key for the shared service IAM user, if created."
+  value       = var.enable_shared_service_account ? aws_iam_access_key.shared_service_access_key.secret : ""
+  sensitive   = true
+}
