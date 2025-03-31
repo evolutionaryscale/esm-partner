@@ -17,35 +17,50 @@
 locals {
   default_shared_service_account_name = "${var.iam_role_name_prefix}-shared-invoke-${var.environment}"
   shared_service_account_final_name   = var.shared_service_account_name != "" ? var.shared_service_account_name : local.default_shared_service_account_name
+
+  # Build a map of shared accounts to create if enabled; otherwise an empty map.
+  shared_accounts_map = var.enable_shared_service_account ? {
+    (local.shared_service_account_final_name) = {
+      name = local.shared_service_account_final_name
+    }
+  } : {}
 }
 
 resource "aws_iam_user" "shared_service_user" {
-  name = local.shared_service_account_final_name
+  for_each = local.shared_accounts_map
+
+  name = each.value.name
   tags = var.tags
 }
 
 resource "aws_iam_policy" "shared_invoke_policy" {
-  name        = "${var.iam_role_name_prefix}-shared-invoke-policy-${var.environment}"
+  for_each = local.shared_accounts_map
+
+  name        = "${var.iam_role_name_prefix}-shared-invoke-policy-${var.environment}-${each.key}"
   description = "Policy to allow invoking SageMaker endpoints"
-  policy = jsonencode({
-    Version = "2012-10-17",
+  policy      = jsonencode({
+    Version   = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Action = [
           "sagemaker:InvokeEndpoint"
         ],
-        Resource = "*" // Adjust scope as needed.
+        Resource = "*"  // Adjust scope as needed.
       }
     ]
   })
 }
 
 resource "aws_iam_user_policy_attachment" "shared_invoke_policy_attachment" {
-  user       = aws_iam_user.shared_service_user.name
-  policy_arn = aws_iam_policy.shared_invoke_policy.arn
+  for_each = local.shared_accounts_map
+
+  user       = aws_iam_user.shared_service_user[each.key].name
+  policy_arn = aws_iam_policy.shared_invoke_policy[each.key].arn
 }
 
 resource "aws_iam_access_key" "shared_service_access_key" {
-  user = aws_iam_user.shared_service_user.name
+  for_each = local.shared_accounts_map
+
+  user = aws_iam_user.shared_service_user[each.key].name
 }

@@ -18,17 +18,17 @@ output "sagemaker_execution_role" {
 
 # Outputs: Be cautious when outputting secrets.
 output "shared_service_user_name" {
-  description = "The name of the shared service IAM user, if created."
-  value       = var.enable_shared_service_account ? aws_iam_user.shared_service_user.name : ""
+  description = "A map of shared service IAM user names, keyed by the shared account name."
+  value       = var.enable_shared_service_account ? { for k, u in aws_iam_user.shared_service_user : k => u.name } : {}
 }
 
 output "shared_service_user_access_key_id" {
-  description = "The access key ID for the shared service IAM user, if created."
-  value       = var.enable_shared_service_account ? aws_iam_access_key.shared_service_access_key.id : ""
+  description = "A map of access key IDs for the shared service IAM users, keyed by the shared account name."
+  value       = var.enable_shared_service_account ? { for k, ak in aws_iam_access_key.shared_service_access_key : k => ak.id } : {}
 }
 
 output "shared_service_user_secret_access_key" {
-  description = "The secret access key for the shared service IAM user, if created."
-  value       = var.enable_shared_service_account ? aws_iam_access_key.shared_service_access_key.secret : ""
+  description = "A map of secret access keys for the shared service IAM users, keyed by the shared account name."
+  value       = var.enable_shared_service_account ? { for k, ak in aws_iam_access_key.shared_service_access_key : k => ak.secret } : {}
   sensitive   = true
 }
