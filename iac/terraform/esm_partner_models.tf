@@ -65,6 +65,7 @@ output "shared_service_user_access_key_id" {
   value       = module.esm_partner.shared_service_user_access_key_id
 }
 
+# TESTING ONLY: terraform output -raw shared_service_user_secret_access_key
 output "shared_service_user_secret_access_key" {
   description = "The secret access key for the shared service IAM user, if created."
   value       = module.esm_partner.shared_service_user_secret_access_key

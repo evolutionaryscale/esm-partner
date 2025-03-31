@@ -19,8 +19,7 @@ output "sagemaker_execution_role" {
 # Outputs: Be cautious when outputting secrets.
 output "shared_service_user_name" {
   description = "The name of the shared service IAM user, if created."
-  # value       = var.enable_shared_service_account ? aws_iam_user.shared_service_user[0].name : ""
-  value = var.enable_shared_service_account ? aws_iam_user.shared_service_user.name : ""
+  value       = var.enable_shared_service_account ? aws_iam_user.shared_service_user.name : ""
 }
 
 output "shared_service_user_access_key_id" {
