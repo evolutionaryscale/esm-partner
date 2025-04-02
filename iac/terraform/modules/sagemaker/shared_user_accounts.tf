@@ -38,15 +38,15 @@ resource "aws_iam_policy" "shared_invoke_policy" {
 
   name        = "${var.iam_role_name_prefix}-shared-invoke-policy-${var.environment}-${each.key}"
   description = "Policy to allow invoking SageMaker endpoints"
-  policy      = jsonencode({
-    Version   = "2012-10-17",
+  policy = jsonencode({
+    Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Action = [
           "sagemaker:InvokeEndpoint"
         ],
-        Resource = "*"  // Adjust scope as needed.
+        Resource = "*" // Adjust scope as needed.
       }
     ]
   })
