@@ -20,6 +20,8 @@ This module is designed to be used by enterprise partners to easily deploy and m
 
 ## Module Structure
 
+### Tree
+
 ```
 terraform-aws-esm-partner/
 ├── README.md                # This documentation file.
@@ -33,6 +35,87 @@ terraform-aws-esm-partner/
 ├── shared_user_accounts.tf  # Resources for creating shared service accounts.
 ├── variables.tf             # Module input variables.
 └── versions.tf              # Provider version requirements.
+```
+
+### High-Level Module Structure
+
+This diagram shows the overall structure of the module as it’s used in your root configuration:
+
+```mermaid
+flowchart TD
+    A[Partner Root Terraform Module]
+    A --> B["module 'esm_partner'"]
+    B --> C[Endpoints Component]
+    B --> D["Shared Service Account Component (Optional)"]
+    
+    C --> E["models.yaml (Model Catalog)"]
+    C --> F[selected_models variable]
+    C --> U["aws_sagemaker_execution_role"]
+    F --> G[For Each Selected ESM Model Instance]
+    U --> G
+    G --> H["random_id (Unique Suffix)"]
+    G --> I[aws_sagemaker_model]
+    G --> J[aws_sagemaker_endpoint_configuration]
+    G --> K[aws_sagemaker_endpoint]
+
+    D --> L["aws_iam_user (Shared Service User)"]
+    D --> M["aws_iam_policy (Invoke Policy)"]
+    D --> N[aws_iam_user_policy_attachment]
+    D --> O[aws_iam_access_key]
+    
+    B --> P[Module Outputs]
+    P --> Q[sagemaker_endpoints]
+    P --> R[shared_service_user_name]
+    P --> S[shared_service_user_access_key_id]
+    P --> T[shared_service_user_secret_access_key]
+```
+
+### Detailed Component Relationships
+
+This diagram dives into how the endpoints and shared user account parts relate to each other within the module:
+
+```mermaid
+flowchart TD
+    subgraph Endpoints
+        A1[models.yaml] 
+        A2[selected_models variable]
+        A3[local.final_selected_models]
+        A4["random_id (unique suffix)"]
+        A5[aws_iam_role.sagemaker_execution_role]
+        A6[aws_sagemaker_model]
+        A7[aws_sagemaker_endpoint_configuration]
+        A8[aws_sagemaker_endpoint]
+    end
+
+    subgraph SharedUserAccount ["Shared Service Account (Optional)"]
+        B1["enable_shared_service_account (var)"]
+        B2[Local: shared_service_account_final_name]
+        B3[aws_iam_user.shared_service_user]
+        B4[aws_iam_policy.shared_invoke_policy]
+        B5[aws_iam_user_policy_attachment.shared_invoke_policy_attachment]
+        B6[aws_iam_access_key.shared_service_access_key]
+    end
+
+    A1 --> A3
+    A2 --> A3
+    A3 --> A4
+    A3 --> A6
+    A6 --> A7
+    A7 --> A8
+    A5 --> A6
+
+    B1 -- "If true" --> B2
+    B2 --> B3
+    B3 --> B4
+    B4 --> B5
+    B3 --> B6
+
+    %% Module Outputs from both components
+    A8 --> O1[Output: sagemaker_endpoints]
+    A5 --> O2[Output: sagemaker_execution_role]
+    B3 --> O3[Output: shared_service_user_name]
+    B6 --> O4[Output: shared_service_user_access_key_id]
+    B6 --> O5[Output: shared_service_user_secret_access_key]
 ```
 
 ## Usage
@@ -140,4 +223,4 @@ See the examples in the examples/ directory:
 
 ## Contributing
 
-Contributions, improvements, and feedback are welcome. Please see our CONTRIBUTING.md for guidelines on how to contribute.
+Contributions, improvements, and feedback are welcome. Please file a bug or reach out by email to contact us.

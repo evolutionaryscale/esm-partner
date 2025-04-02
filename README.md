@@ -71,7 +71,3 @@ esm-partner/
 ## Contact
 
 If you have any questions or suggestions, please open an issue on the GitHub repository. You can also reach me by [email](mailto:cram%40evolutionaryscale.ai).
-
-⸻
-
-By using this repository as your reference, you can integrate and deploy EvolutionaryScale’s ESM models efficiently within your AWS environment while maintaining consistency with our core product design.
