@@ -1,7 +1,7 @@
-# This module creates a shared service account for accessing SageMaker endpoints.
+# This config creates a shared service account for accessing SageMaker endpoints.
 # It includes IAM user creation, policy attachment, and access key generation.
 #
-# This module is designed to be used in conjunction with the main SageMaker module.
+# This config is designed to be used in conjunction with the main SageMaker module.
 # It is assumed that the IAM role for SageMaker execution and the models are
 # already defined in the main module.
 #
