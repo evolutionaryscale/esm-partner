@@ -13,8 +13,7 @@ provider "aws" {
 }
 
 module "esm_partner" {
-  # source = "git::https://github.com/evolutionaryscale/esm-partner.git?ref=v1.0.0"
-  source = "./modules/sagemaker"
+  source ="git@github.com:evolutionaryscale/esm-partner.git//iac/terraform/modules/sagemaker?ref=v0.9.0"
 
   # Select the models to deploy. Each entry in the map corresponds to a
   # model deployment configuration. The key is a logical name for the
@@ -57,7 +56,8 @@ output "sagemaker_endpoints" {
   value       = module.esm_partner.sagemaker_endpoints
 }
 
-# Output the IAM role name for the SageMaker execution role
+# Output the IAM role name for the SageMaker shared service account. The
+# key id and secret can be used to access the endpoint(s) created above.
 output "shared_service_user_name" {
   description = "The name of the shared service IAM user, if created."
   value       = module.esm_partner.shared_service_user_name
