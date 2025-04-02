@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "esm_partner" {
-  source ="git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v0.9.0"
+  source = "git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v1.0.0"
 
   # Select the models to deploy. Each entry in the map corresponds to a
   # model deployment configuration. The key is a logical name for the
@@ -23,8 +23,8 @@ module "esm_partner" {
   # instance_type must match one of the instance types supported by the model.
   selected_models = {
     "prototype_model" = {
-      selector       = "ESMC-300M"
-      instance_type  = "ml.g5.2xlarge"
+      selector      = "ESMC-300M"
+      instance_type = "ml.g5.2xlarge"
     }
   }
 
