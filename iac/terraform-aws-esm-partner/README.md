@@ -1,89 +1,143 @@
-# esm-partner Terraform Module
+# terraform-aws-esm-partner
 
-This Terraform module deploys SageMaker resources for the ESM models. It provisions the following:
-- An IAM role for SageMaker with the necessary permissions.
-- SageMaker models, endpoint configurations, and endpoints based on a model catalog.
-- Unique resource naming via a random suffix for easier identification.
-- **Optional**: A shared service account for endpoint invocation, which allows a dedicated IAM user (or users) to be created for accessing the endpoints.
+The **terraform-aws-esm-partner** module deploys SageMaker resources for EvolutionaryScale's ESM models in AWS. It creates the necessary IAM roles, SageMaker models, endpoint configurations, and endpoints using a configurable model catalog. The module also optionally provisions a shared service account for accessing the endpoints.
+
+This module is designed to be used by enterprise partners to easily deploy and manage ESM models within their dedicated AWS environment using Infrastructure-as-Code (IaC).
 
 ## Features
-- **Multi-Model Support**:
-Define a catalog of models in a `models.yaml` file and select which ones to deploy via a map variable (`selected_models`). This lets you deploy multiple models concurrently with custom instance settings for each.
-- **Parameterization**:
-Customize instance types, counts, naming, and other settings through input variables.
-- **Unique Resource Identification**:
-Each deployment is assigned a unique suffix to avoid collisions and to facilitate resource tracking.
-- **Optional Shared Service Account**:
-When enabled (via the `enable_shared_service_account` variable), the module creates a shared IAM user (or users, if extended in the future) along with an IAM policy and access keys. This account can be used to authenticate and invoke the SageMaker endpoints from a shared service account in your environment.
+
+- **Multi-Model Support:**  
+  Use a `models.yaml` catalog to define available models and select which ones to deploy via a map variable (`selected_models`).
+
+- **Customizable Deployments:**  
+  Override instance types, counts, and naming conventions through input variables.
+
+- **Unique Resource Identification:**  
+  Resources are assigned unique suffixes (via a random_id) to avoid name collisions and ease management.
+
+- **Optional Shared Service Account:**  
+  When enabled, the module creates a shared IAM user (with an associated policy and access keys) to allow a shared service account to invoke SageMaker endpoints.
+
+## Module Structure
+
+```
+terraform-aws-esm-partner/
+├── README.md                # This documentation file.
+├── examples/                # Example usage configurations.
+│   ├── basic/               # Example with one or more model endpoints.
+│   ├── basic_shared_user/   # Example including a shared service account.
+│   └── multi_model/         # Example demonstrating multi-model deployments.
+├── main.tf                  # Main module configuration (SageMaker endpoints).
+├── models.yaml              # Catalog of available models.
+├── outputs.tf               # Module outputs.
+├── shared_user_accounts.tf  # Resources for creating shared service accounts.
+├── variables.tf             # Module input variables.
+└── versions.tf              # Provider version requirements.
+```
 
 ## Usage
 
-Example usage in a Terraform configuration:
+Include this module in your Terraform configuration as follows:
 
 ```hcl
-module "esm_partner" {
-  source = "git::https://github.com/evolutionaryscale/esm-partner.git?ref=v1.0.0"
+# Example Terraform configuration for deploying SageMaker models and endpoints using the ESM Partner module.
 
+provider "aws" {
+  region = "us-east-2"
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      Project     = "esm-partner"
+    }
+  }
+}
+
+module "esm_partner" {
+  source ="git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v0.9.0"
+
+  # Select the models to deploy. Each entry in the map corresponds to a
+  # model deployment configuration. The key is a logical name for the
+  # deployment, and the value is an object containing the model selector (and,
+  # optionally, instance type and count). The selector must match a model
+  # defined in the `models_menu` of the included models.yaml file. The
+  # instance_type must match one of the instance types supported by the model.
   selected_models = {
     "prototype_model" = {
       selector       = "ESMC-300M"
       instance_type  = "ml.g5.2xlarge"
-      instance_count = 1
-    },
-    "performance_model" = {
-      selector       = "ESMC-300M"
-      instance_type  = "ml.g5.4xlarge"
-      instance_count = 1
-    },
-    "test_model" = {
-      selector       = "ESMC-600M"
-      instance_type  = "ml.g6e.4xlarge"
-      instance_count = 1
     }
   }
-
-  iam_role_name_prefix          = "esm"
-  environment                   = "prod"
-  region                        = "us-west-1"
-  tags = {
-    Environment = "prod"
-    Project     = "esm-partner"
-  }
-
-  enable_shared_service_account = true
-  # Optionally, you can override the default shared service account name:
-  # shared_service_account_name = "custom-shared-account-name"
 }
 
+# Outputs for the deployed SageMaker models and endpoints. Values
+# needed to access the ESM API include: endpoint_name, endpoint_url, 
+# forge_model_name.
 output "sagemaker_endpoints" {
-  description = "Deployed SageMaker endpoint details from the module."
+  description = "Deployed SageMaker endpoints from the module."
   value       = module.esm_partner.sagemaker_endpoints
 }
 ```
 
-## Variables
+## Inputs
 
-For a full list of inputs, see `variables.tf`. Key variables include:
+The module accepts the following key variables (see variables.tf):
+- **selected_models (map(object)):**
+  A map where each key is a logical name for a model deployment.
 
-- **`selected_models`**:
-A map of model configurations. Each key defines a deployment and includes the model selector and optional overrides for instance type and instance count.
-- **`iam_role_name_prefix, environment, region, tags`**:
-These are used for resource naming and tagging.
-- **`enable_shared_service_account`**:
-A boolean flag that enables the creation of a shared service account for invoking endpoints. When enabled, the module creates an IAM user (or accounts) with associated policies and access keys.
-- **`shared_service_account_name`** (optional):
-Override for the default name used for the shared service account. If not provided, a default is computed using `iam_role_name_prefix` and `environment`.
+  The object should include:
+    - selector (string): Must match a key in models.yaml.
+    - instance_type (optional string): Override the default instance type for the model.
+    - instance_count (optional number): Override the default instance count.
+
+- **iam_role_name_prefix (string):**
+  Prefix used for naming IAM roles and related resources.
+
+- **environment (string):**
+  Deployment environment (e.g., dev, staging, prod).
+
+- **region (string):**
+  AWS region to deploy the resources.
+
+- **tags (map(string)):**
+  Common tags to apply to all resources.
+
+- **enable_shared_service_account (bool):**
+  Set to true to create a shared IAM user for endpoint invocation.
+
+- **shared_service_account_name (string, optional):**
+  Optional override for the default shared service account name.
 
 ## Outputs
 
-The module provides the following outputs:
-- **`sagemaker_endpoints`**:
-A map of deployed endpoint details, including the endpoint URL, endpoint configuration name, endpoint name, and the associated forge model name.
-- **`sagemaker_execution_role`**:
-The name of the IAM role used for SageMaker.
-- **(Optional) Shared Service Account Outputs**:
-When the shared service account is enabled, outputs such as the shared service IAM user’s name and access keys are available (note that sensitive values like the secret access key are marked as sensitive).
+The module exports the following outputs:
+
+- **sagemaker_endpoints (map(object)):**
+  A map of deployed endpoint details (endpoint URL, configuration name, endpoint name, and forge model name).
+
+- **sagemaker_execution_role (string):**
+  The name of the IAM role used for SageMaker.
+
+- **shared_service_user_name (string):**
+  The name of the shared IAM user, if created (outputs an empty string if not enabled).
+
+- **shared_service_user_access_key_id (string):**
+  The user access key associated with the shared service user (outputs an empty string if not enabled).
+
+- **shared_service_user_secret_access_key (string):**
+  The secret key associated with the shared service user (sensitive, not outputs by default).
 
 ## License
 
 Usage of this module is governed by your separate licensing agreement with EvolutionaryScale.
+
+## Examples
+
+See the examples in the examples/ directory:
+- **Basic**: Deploy a simple model endpoint.
+- **Basic Shared User**: Deploy a model endpoint with a shared service account.
+- **Multi Model**: Deploy multiple model endpoints concurrently.
+
+## Contributing
+
+Contributions, improvements, and feedback are welcome. Please see our CONTRIBUTING.md for guidelines on how to contribute.

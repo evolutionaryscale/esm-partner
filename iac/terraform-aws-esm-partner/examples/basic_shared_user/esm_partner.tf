@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "esm_partner" {
-  source ="git@github.com:evolutionaryscale/esm-partner.git//iac/terraform/modules/sagemaker?ref=v0.9.0"
+  source ="git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v0.9.0"
 
   # Select the models to deploy. Each entry in the map corresponds to a
   # model deployment configuration. The key is a logical name for the
@@ -25,15 +25,7 @@ module "esm_partner" {
     "prototype_model" = {
       selector       = "ESMC-300M"
       instance_type  = "ml.g5.2xlarge"
-    },
-    # "performance_model" = {
-    #   selector       = "ESMC-300M"
-    #   instance_type  = "ml.g5.4xlarge"
-    # },
-    # "test_model" = {
-    #   selector       = "ESMC-600M"
-    #   instance_type  = "ml.g6e.4xlarge"
-    # }
+    }
   }
 
   # Varibles for IAM roles and environment
@@ -45,11 +37,12 @@ module "esm_partner" {
   #   Project     = "esm-partner"
   # }
 
+  # Enable the shared service account for invoking SageMaker endpoints.
   enable_shared_service_account = true
 }
 
-# Outputs for the deployed SageMaker models and endpoints. Values needed
-# to access the ESM API include: endpoint_name, endpoint_url, and 
+# Outputs for the deployed SageMaker models and endpoints. Values
+# needed to access the ESM API include: endpoint_name, endpoint_url, 
 # forge_model_name.
 output "sagemaker_endpoints" {
   description = "Deployed SageMaker endpoints from the module."
