@@ -165,50 +165,113 @@ output "sagemaker_endpoints" {
 ## Inputs
 
 The module accepts the following key variables (see variables.tf):
-- **selected_models (map(object)):**
+- **`selected_models`:**
   A map where each key is a logical name for a model deployment.
 
   The object should include:
-    - selector (string): Must match a key in models.yaml.
-    - instance_type (optional string): Override the default instance type for the model.
-    - instance_count (optional number): Override the default instance count.
+    - `selector`: Must match a key in models.yaml.
+    - `instance_type` (optional): Override the default instance type for the model.
+    - `instance_count` (optional): Override the default instance count.
 
-- **iam_role_name_prefix (string):**
+- **`iam_role_name_prefix`:**
   Prefix used for naming IAM roles and related resources.
 
-- **environment (string):**
+- **`environment`:**
   Deployment environment (e.g., dev, staging, prod).
 
-- **region (string):**
+- **`region`:**
   AWS region to deploy the resources.
 
-- **tags (map(string)):**
+- **`tags` (map(string)):**
   Common tags to apply to all resources.
 
-- **enable_shared_service_account (bool):**
+- **`enable_shared_service_account`:**
   Set to true to create a shared IAM user for endpoint invocation.
 
-- **shared_service_account_name (string, optional):**
+- **`shared_service_account_name` (optional):**
   Optional override for the default shared service account name.
 
 ## Outputs
 
 The module exports the following outputs:
 
-- **sagemaker_endpoints (map(object)):**
+- **`sagemaker_endpoints`:**
   A map of deployed endpoint details (endpoint URL, configuration name, endpoint name, and forge model name).
 
-- **sagemaker_execution_role (string):**
+- **`sagemaker_execution_role`:**
   The name of the IAM role used for SageMaker.
 
-- **shared_service_user_name (string):**
+- **`shared_service_user_name`:**
   The name of the shared IAM user, if created (outputs an empty string if not enabled).
 
-- **shared_service_user_access_key_id (string):**
+- **`shared_service_user_access_key_id`:**
   The user access key associated with the shared service user (outputs an empty string if not enabled).
 
-- **shared_service_user_secret_access_key (string):**
-  The secret key associated with the shared service user (sensitive, not outputs by default).
+- **`shared_service_user_secret_access_key`:**
+  The secret key associated with the shared service user (sensitive, not output by default).
+
+**NOTE: Though secret access key is marked as `sensitive` in Terraform, this is insufficient to secure the key material. By default Terraform stores output values unencrypted in its state file. You must take care to ensure that this key is handled properly (i.e., stored in a proper secrets store, by encrypting the Terraform state file).**
+
+## Service Management
+
+Use the `terraform output` command to get the information you need to manage the SageMaker Endpoint and authenticate using the shared service account:
+
+```shell
+% terraform output
+sagemaker_endpoints = {
+  "prototype_model" = {
+    "endpoint_config_name" = "EndpointConfig-Endpoint-ESMC-300M-1-2df2c3dd"
+    "endpoint_name" = "Endpoint-ESMC-300M-1-2df2c3dd"
+    "endpoint_url" = "https://runtime.sagemaker.us-east-2.amazonaws.com/endpoints/Endpoint-ESMC-300M-1-2df2c3dd/invocations"
+    "forge_model_name" = "esmc-300m-2024-12"
+  }
+}
+shared_service_user_access_key_id = tomap({
+  "esm-shared-invoke-dev" = "AKIAYM7POJJIECYZ5LJU"
+})
+shared_service_user_name = tomap({
+  "esm-shared-invoke-dev" = "esm-shared-invoke-dev"
+})
+shared_service_user_secret_access_key = <sensitive>
+```
+
+### Cost Control
+
+AWS costs are incurred continuously when the SageMaker Endpoints are configured. Use the `endpoint_name` to delete the SageMaker Endpoint and deallocate the EC2 instance(s):
+
+```shell
+aws sagemaker delete-endpoint --endpoint-name "Endpoint-ESMC-300M-1-2df2c3dd"
+```
+
+This command deletes the Endpoint (there is no way to "disable" it). Restoring the Endpoint should be as simple as rerunning your `terraform apply` command.
+
+### Shared Service Account Authentication (Optional)
+
+If you choose to create and use the shared service account to access your SageMaker Endpoint(s), you can find the relevant access key and secret in the Terraform output. You can insert this snippet into a Jupyter Notebook to authenticate using the shaerd service account.
+
+1. Grab the SENSITIVE secret access key from Terraform:
+
+  ```shell
+  % terraform output -json shared_service_user_secret_access_key
+  {"esm-shared-invoke-dev":"MJRULedmIbkqiYPZAd8inWwxlGpTQulgin/DgP27"}
+  ```
+
+2. Use in a Jupyter Notebook or elsewhere (being sure to take care of this secret!):
+
+  ```python
+  import os
+  import boto3
+
+  AWS_REGION="us-east-2"
+  AWS_ACCESS_KEY_ID="AKIAYM7POJJIECYZ5LJU"
+  AWS_SECRET_ACCESS_KEY="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"
+
+  session = boto3.setup_default_session(
+      aws_access_key_id=AWS_ACCESS_KEY_ID,
+      aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+      region_name=AWS_REGION
+  )
+  ```
 
 ## License
 
