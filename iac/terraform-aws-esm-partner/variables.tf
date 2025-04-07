@@ -1,3 +1,9 @@
+variable "models_yaml_path" {
+  description = "Path to the models YAML configuration file. (Defaults to current directory.)"
+  type        = string
+  default     = "models.yaml"
+}
+
 variable "selected_models" {
   description = "Map of selected models for deployment. Each key defines a deployment, and the value specifies the model selector and optional overrides."
   type = map(object({
