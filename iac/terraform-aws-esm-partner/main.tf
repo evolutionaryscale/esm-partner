@@ -7,7 +7,8 @@
 
 locals {
   # Decode the models catalog from models.yaml.
-  models_menu = yamldecode(file("${path.module}/models.yaml")).models
+  models_config = try(yamldecode(file(var.models_yaml_path)), yamldecode(file("${path.module}/models.yaml")))
+  models_menu = local.models_config.models
 
   # Merge user-supplied selected_models with defaults from models_menu.
   final_selected_models = {
