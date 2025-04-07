@@ -13,11 +13,3 @@ models:
     model_package: "arn:aws:sagemaker:us-east-2:057799348421:model-package/esmc-600m-EXAMPLE"
     instance_type: "ml.g5.4xlarge"
     instance_count: 1
-  # Test model for ESMC-300M
-  esmc-300m-2024-12:
-    sagemaker_model_name: Model-esmc-300m-2024-12-1
-    forge_model_name: esmc-300m-2024-12
-    endpoint_name: Endpoint-esmc-300m-2024-12-1
-    model_package: arn:aws:sagemaker:us-east-2:533267203117:model-package/esmc-300m-2024-12
-    instance_type: ml.g5.2xlarge
-    instance_count: 1
