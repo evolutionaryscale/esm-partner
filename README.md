@@ -28,7 +28,7 @@ esm-partner/
 │   └── terraform-aws-esm-partner/   # Terraform `esm-partner` module and code for deploying AWS cloud infrastructure.
 │       ├── README.md                # Overview and usage instructions for IaC.
 │       ├── *.tf                     # Module HCL code.
-│       ├── models.yaml              # ESM module specification configuration file.
+│       ├── models.yaml              # ESM module specification fallback configuration file.
 │       └── examples/                # Example configurations demonstrating module usage.
 │           ├── basic/               # Basic single-model deployment example.
 │           ├── basic_shared_user/   # Example with shared service account enabled.
