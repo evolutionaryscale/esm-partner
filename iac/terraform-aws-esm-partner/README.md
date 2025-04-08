@@ -4,6 +4,10 @@ The **terraform-aws-esm-partner** module deploys SageMaker resources for Evoluti
 
 This module is designed to be used by enterprise partners to easily deploy and manage ESM models within their dedicated AWS environment using Infrastructure-as-Code (IaC).
 
+## START HERE
+
+To get started you must subscribe to our AWS SageMaker model to make it available within your AWS account. See these instructions to [subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription). Here you will find detailed instructions to [add this model to your module configuration](./SETUP_CONFIG.md#modelsyaml-configuration).
+
 ## Features
 
 - **Multi-Model Support:**  
@@ -165,6 +169,9 @@ output "sagemaker_endpoints" {
 ## Inputs
 
 The module accepts the following key variables (see variables.tf):
+
+- **`models_yaml_path`:** The path to the models YAML configuration file, `models.yaml`. Defaults to current directory.
+
 - **`selected_models`:**
   A map where each key is a logical name for a model deployment.
 
@@ -210,9 +217,16 @@ The module exports the following outputs:
 - **`shared_service_user_secret_access_key`:**
   The secret key associated with the shared service user (sensitive, not output by default).
 
+
 **NOTE: Though secret access key is marked as `sensitive` in Terraform, this is insufficient to secure the key material. By default Terraform stores output values unencrypted in its state file. You must take care to ensure that this key is handled properly (i.e., stored in a proper secrets store, by encrypting the Terraform state file).**
 
 ## Service Management
+
+### Startup Time
+
+It usually takes 10-15 minutes for SageMaker to complete the deployment of a new Endpoin when running `terraform apply`. Once that command succeeds, the SageMaker deployment of the model now lives on a dedicated GPU instance inside your AWS environment, and will be billed directly to your AWS account.
+
+### Outputs
 
 Use the `terraform output` command to get the information you need to manage the SageMaker Endpoint and authenticate using the shared service account:
 
@@ -275,7 +289,7 @@ If you choose to create and use the shared service account to access your SageMa
 
 ## License
 
-Usage of this module is governed by your separate licensing agreement with EvolutionaryScale.
+Usage of this module is governed by your separate licensing agreement with EvolutionaryScale. Please consult with your legal team if you have questions about licensing.
 
 ## Examples
 

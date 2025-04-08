@@ -48,7 +48,7 @@ esm-partner/
 
 2. **Review the Documentation:**
 
-  For detailed setup and usage instructions, please refer to the README.md files.
+  For detailed setup and usage instructions, please refer to the [README.md](./iac/terraform-aws-esm-partner/README.md) files.
 
 3. **Use the Terraform Module:**
 
@@ -58,7 +58,7 @@ esm-partner/
 
 - **Customization & Maintenance:**
 
-  This repository is designed to be a reference for a standardized, unified product. We encourage you to adapt the provided configurations to your own environment, but please coordinate with us if there are changes you think would be useful for the base modules.
+  This repository is designed to be a reference for a standardized, unified product. We encourage you to adapt the provided configurations to your own environment, and would love it if you could share changes with us that you think would be useful for the base modules.
 
 - **License:**
 
