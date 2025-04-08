@@ -4,9 +4,13 @@ The **terraform-aws-esm-partner** module deploys SageMaker resources for Evoluti
 
 This module is designed to be used by enterprise partners to easily deploy and manage ESM models within their dedicated AWS environment using Infrastructure-as-Code (IaC).
 
-## START HERE
+## Getting Started
 
-To get started you must subscribe to our AWS SageMaker model to make it available within your AWS account. See these instructions to [subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription). Here you will find detailed instructions to [add this model to your module configuration](./SETUP_CONFIG.md#modelsyaml-configuration).
+Before you can deploy a model, you need to do the follwing as one-time setup:
+
+- Set up your [AWS and local environment](./SETUP_CONFIG.md#getting-started).
+- [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account.
+- Add the model to your model configuration using these [detailed instructions](./SETUP_CONFIG.md#modelsyaml-configuration).
 
 ## Features
 

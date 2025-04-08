@@ -1,3 +1,111 @@
+# Getting Started
+
+First you'll need to set up your AWS and local environment.
+
+1. **Provision a New AWS Account:**
+
+- Set up a new, isolated AWS account within your organization’s IT security framework. This ensures that your deployments are separate and meet your security and compliance requirements.
+
+2. **Install Prerequisites:**
+
+- **tfenv:** Install [tfenv](https://github.com/tfutils/tfenv) from GitHub to manage Terraform versions. (We recommend using `tfenv` to ensure you’re running a compatible Terraform version.)
+- **Terraform CLI:** Follow the [Terraform installation guide](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+- **AWS CLI:** Install using the [AWS CLI instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+3. **Clone the Repository:**
+   ```bash
+   git clone git@github.com:evolutionaryscale/esm-partner.git
+   cd esm-partner
+    ```
+
+4.	**Configure Your Environment:**
+
+- Variable Overrides:
+
+  Use the provided template file to create a local `terraform.tfvars` file in which you override variables and select your model(s):
+
+  ```bash
+  cd iac/terraform
+  cp templates/terraform-tfvars.txt terraform.tfvars
+  ```
+
+  Review and customize deployment parameters by editing the `terraform.tfvars` file. This file is where you can override defaults for variables such as:
+
+	-	set environment (e.g., `dev`, `staging`, `prod`)
+	-	set region (e.g., `us-east-1`, `us-west-2`)
+
+  Specify the model(s) you want to run by setting the `selected_models` variable. The basic config is a simple selector for one of the models defined in `models.yaml`, which will select that model and use defaults for all other config values:
+
+  ```
+  selected_models = {
+    "exploratory_model" = {
+      selector       = "ESMC-300M"
+    }
+  }
+  ```
+
+  Adding additional models to this map will bring up additional SageMaker Endpoints. Fields in `models.yaml` can also optionally be overridden using this variable.
+
+  You can also override variables via command-line flags if needed:
+
+  ```bash
+  terraform apply -var="environment=staging"
+  ```
+
+- AWS Credentials & Profile:
+
+  Set the `AWS_PROFILE` environment variable to match your configured profile:
+
+  ```bash
+  export AWS_PROFILE=<your_profile_name>
+  ```
+
+- Custom Partner Configurations:
+
+  If you are a partner, you can place your custom modifications in the `partners/` directory or create a fork of this repository. This lets you maintain partner-specific settings independent of the core product.
+
+
+5.	**Deploy the Infrastructure:**
+
+  Use the provided Makefile targets (e.g., `make init`) to deploy the infrastructure.
+
+  ```bash
+  cd iac/terraform
+  make help                  # to get info on make targets
+  make create-state-bucket   # create tf state S3 bucket
+  make init                  # initialize tf state in S3
+  terraform plan
+  terraform apply            # EC2 charges start here!
+  ```
+
+6. **Validate:**
+
+- Use the sample notebook (e.g., `notebooks/ESMHelloWorldNotebook.ipynb`) to verify that your SageMaker Endpoint is accessible and responding correctly.
+- Check outputs (such as the endpoint URL) from Terraform to confirm that resources were created as expected.
+- Modify configurations in your terraform.tfvars file as needed and re-run terraform apply to update your environment.
+
+7. **Explore & Customize:**
+
+- Review the sample notebooks in the notebooks/examples/ directory.
+- Check the documentation in docs/ for detailed setup and usage guides.
+
+8. **Profit!**
+
+
+## Cleaning up
+
+Reverse the setup process. BEWARE: These commands *DESTROY STATE* and cannot necessarily be reversed/recovered.
+
+```bash
+cd iac/terraform
+terraform plan -destroy
+terraform destroy           # deconstruct infra
+make destroy-state-bucket   # destroy remote tf state
+make clean                  # destroy local tf state
+```
+
+All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
+
 # SageMaker Model Subscription
 
 The SageMaker Model subscrption process is documented as a part of our [open source repository](https://github.com/evolutionaryscale/esm?tab=readme-ov-file#esm-c-via-sagemaker-for-commercial-use--), and is repeated here for convenience.
