@@ -97,7 +97,7 @@ First you'll need to set up your AWS and local environment.
 
         Specify the model(s) you want to run by setting the `selected_models` variable. The basic config is a simple selector for one of the models defined in `models.yaml`, which will select that model and use defaults for all other config values:
 
-        ```
+        ```hcl
         selected_models = {
             "exploratory_model" = {
                 selector       = "ESMC-300M"
@@ -142,7 +142,8 @@ Reverse the setup process. BEWARE: These commands *DESTROY STATE* and cannot nec
 ```bash
 cd $(WORKING_DIR)
 terraform plan -destroy
-terraform destroy           # deconstruct infra
+terraform destroy                                           # deconstruct infra
+rm -Rf .terraform .terraform.lock.hcl terraform.tfstate*    # remove local terraform state
 ```
 
 All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
@@ -159,7 +160,7 @@ If you have not done so already, follow the instructions to [Subscribe to our AW
 
 The location of the active `models.yaml` file is specified using the `models_yaml_path` Terraform variable. It defaults to looking for that file in the current working directory.
 
-```
+```hcl
 variable "models_yaml_path" {
   description = "Path to the models YAML configuration file. (Defaults to current directory.)"
   type        = string
@@ -218,7 +219,7 @@ You select models from the "menu" provided in `models.yaml` using the `selected_
 
 In your Terraform configuration, you might specify:
 
-```
+```hcl
 module "esm_partner" {
   source         = "git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v1.0.0"
   models_yaml_path = "/path/to/your/models.yaml"
