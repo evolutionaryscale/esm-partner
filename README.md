@@ -31,7 +31,7 @@ Clone the repository and navigate to the root of the module.
     cd esm-partner/iac/terraform-aws-esm-partner
   ```
 
-Examples can be found in a subdirectory from here: [`examples/`](./iac/terraform-aws-esm-partner/examples/).
+Examples can be found in a subdirectory from here.
 
 2. **Review the Documentation:**
 
