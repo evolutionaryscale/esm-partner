@@ -23,7 +23,7 @@ This module is designed to be used by partners to easily deploy and manage ESM m
 Before you can deploy a model, you need to do the following as one-time setup:
 
 - [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account.
-- Set up your [AWS and local environment](./SETUP_CONFIG.md#getting-started).
+- Set up your [AWS and local environment and deploy](./SETUP_CONFIG.md#setup-and-initial-deploy).
 - Add the model to your `models.yaml` configuration file using these [detailed instructions](./SETUP_CONFIG.md#modelsyaml-configuration).
 
 ## Module Structure

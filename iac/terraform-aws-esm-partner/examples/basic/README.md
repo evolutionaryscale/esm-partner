@@ -17,6 +17,8 @@ The module is designed for use in a vanilla AWS account. The example uses a sing
 - Terraform (v1.0 or later)
 - AWS CLI installed and configured (with appropriate credentials)
 - Git access to the repository containing the module
+- [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account
+- Set up your [AWS and local environment, `model.yaml`, and deploy](./SETUP_CONFIG.md#setup-and-initial-deploy)
 
 ## Usage
 
@@ -25,11 +27,17 @@ The module is designed for use in a vanilla AWS account. The example uses a sing
    Clone the repository that contains the module and this example:
    ```bash
    git clone git@github.com:evolutionaryscale/esm-partner.git
-   cd esm-partner/examples/basic
+   cd esm-partner/iac/terraform-aws-esm-partner
    ```
 
 2.	**Review the Example Configuration**
 The example configuration is defined in `esm_partner.tf`
+
+   ```bash
+   cd examples/basic
+   vi models.yaml
+   vi esm_partner.tf
+   ```
 
 3. **Initialize Terraform**
 
@@ -68,7 +76,7 @@ When you’re finished, you can destroy the deployed resources:
 
 - **Module Versioning**:
 
-   The module is referenced via a Git URL with a specific tag (v0.9.0). In a production environment, you may pin the module version as needed.
+   The module is referenced via a Git URL with a specific tag (v1.0.0). In a production environment, you may pin the module version as needed.
 
 - **Customizations**:
 
@@ -79,5 +87,5 @@ When you’re finished, you can destroy the deployed resources:
    If you need to use a shared service account for endpoint invocation, ensure that enable_shared_service_account is set to true in your module call and that you adjust any associated variables accordingly.
 
 Further Reading
-- [esm-partner Terraform Module Documentation](../README.md)
+- [esm-partner Terraform Module Documentation](../../README.md)
 - [Terraform Documentation](https://www.terraform.io/docs)

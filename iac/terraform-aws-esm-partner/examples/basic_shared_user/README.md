@@ -1,6 +1,6 @@
 # Basic Shared User Example
 
-This example builds on the [esm-partner Terraform Module](../README.md) and demonstrates deploying a SageMaker endpoint **with the optional shared service account enabled**.
+This example builds on the [esm-partner Terraform Module](../../README.md) and demonstrates deploying a SageMaker endpoint **with the optional shared service account enabled**.
 
 ## Overview
 
@@ -16,7 +16,7 @@ In addition to deploying a SageMaker endpoint using a model from the module’s 
   - `shared_service_user_access_key_id`
   - `shared_service_user_secret_access_key` (sensitive)
 
-For full details on the module configuration, inputs, and outputs, please see the main [README](../README.md).
+For full details on the module configuration, inputs, and outputs, please see the main [README](../../README.md).
 
 ## Additional Notes
 

@@ -1,6 +1,6 @@
 # Multi-Model Example
 
-This example demonstrates how to deploy multiple SageMaker models and endpoints concurrently using the [esm-partner Terraform Module](../README.md).
+This example demonstrates how to deploy multiple SageMaker models and endpoints concurrently using the [esm-partner Terraform Module](../../README.md).
 
 ## Overview
 
@@ -17,4 +17,4 @@ In this configuration, we deploy two model endpoints simultaneously by specifyin
   The `selected_models` variable in this example includes multiple keys, each representing a model deployment. The module reads the model catalog from `models.yaml` and merges in any overrides specified in the map.
 
 
-For full details on the module configuration, inputs, and outputs, please see the main [README](../README.md).
+For full details on the module configuration, inputs, and outputs, please see the main [README](../../README.md).
