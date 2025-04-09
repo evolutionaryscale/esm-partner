@@ -41,7 +41,7 @@ Examples can be found in a subdirectory from here: [`examples/`](./iac/terraform
 
   Reference our Terraform module in your own IaC configuration as demonstrated in the examples. For instance, see the [basic example](./iac/terraform-aws-esm-partner/examples/basic/) for a simple deployment setup.
 
-  ```
+  ```hcl
   module "esm_partner" {
     source = "git@github.com:evolutionaryscale/esm-partner.git//iac/terraform-aws-esm-partner?ref=v1.0.0"
 
