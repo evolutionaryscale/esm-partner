@@ -17,8 +17,8 @@ The module is designed for use in a vanilla AWS account. The example uses a sing
 - Terraform (v1.0 or later)
 - AWS CLI installed and configured (with appropriate credentials)
 - Git access to the repository containing the module
-- [Subscribe to our AWS SageMaker model](./GETTING_STARTED.md#sagemaker-model-subscription) to make it available within your AWS account
-- Set up your [AWS and local environment, `model.yaml`, and deploy](./GETTING_STARTED.md#setup-and-initial-deploy)
+- [Subscribe to our AWS SageMaker model](../../GETTING_STARTED.md#sagemaker-model-subscription) to make it available within your AWS account
+- Set up your [AWS and local environment, `model.yaml`, and deploy](../../GETTING_STARTED.md#setup-and-initial-deploy)
 
 ## Usage
 
