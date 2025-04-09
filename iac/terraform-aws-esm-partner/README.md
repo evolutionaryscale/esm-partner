@@ -8,8 +8,8 @@ This module is designed to be used by enterprise partners to easily deploy and m
 
 Before you can deploy a model, you need to do the follwing as one-time setup:
 
-- Set up your [AWS and local environment](./SETUP_CONFIG.md#getting-started).
 - [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account.
+- Set up your [AWS and local environment](./SETUP_CONFIG.md#getting-started).
 - Add the model to your model configuration using these [detailed instructions](./SETUP_CONFIG.md#modelsyaml-configuration).
 
 ## Features
@@ -34,7 +34,7 @@ Before you can deploy a model, you need to do the follwing as one-time setup:
 terraform-aws-esm-partner/
 ├── README.md                # This documentation file.
 ├── examples/                # Example usage configurations.
-│   ├── basic/               # Example with one or more model endpoints.
+│   ├── basic/               # Example with one model endpoint.
 │   ├── basic_shared_user/   # Example including a shared service account.
 │   └── multi_model/         # Example demonstrating multi-model deployments.
 ├── main.tf                  # Main module configuration (SageMaker endpoints).
@@ -293,7 +293,7 @@ If you choose to create and use the shared service account to access your SageMa
 
 ## License
 
-Usage of this module is governed by your separate licensing agreement with EvolutionaryScale. Please consult with your legal team if you have questions about licensing.
+  This project is licensed under the terms of the MIT license. See [LICENSE](../../LICENSE.md) for details.
 
 ## Examples
 
