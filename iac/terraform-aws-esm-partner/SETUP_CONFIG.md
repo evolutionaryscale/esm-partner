@@ -1,3 +1,5 @@
+# Getting Started Guide
+
 # SageMaker Model Subscription
 
 The SageMaker Model subscrption process is documented as a part of our [open source repository](https://github.com/evolutionaryscale/esm?tab=readme-ov-file#esm-c-via-sagemaker-for-commercial-use--), and is repeated here for convenience.
@@ -14,7 +16,7 @@ In the case where ES is supplying you a private or custom model, we will provide
 
 ---
 
-# Getting Started
+# Setup and Initial Deploy
 
 First you'll need to set up your AWS and local environment.
 
