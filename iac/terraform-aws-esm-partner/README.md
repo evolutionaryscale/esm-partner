@@ -26,8 +26,6 @@ Before you can deploy a model, you need to do the following as one-time setup:
 - Set up your [AWS and local environment](./SETUP_CONFIG.md#getting-started).
 - Add the model to your `models.yaml` configuration file using these [detailed instructions](./SETUP_CONFIG.md#modelsyaml-configuration).
 
-
-
 ## Module Structure
 
 ### High-Level Module Structure
@@ -169,7 +167,45 @@ shared_service_user_name = tomap({
 shared_service_user_secret_access_key = <sensitive>
 ```
 
-### Tree
+### Cost Control
+
+AWS costs are incurred continuously when the SageMaker Endpoints are configured. Use the `endpoint_name` to delete the SageMaker Endpoint and deallocate the EC2 instance(s):
+
+```shell
+aws sagemaker delete-endpoint --endpoint-name "Endpoint-ESMC-300M-1-2df2c3dd"
+```
+
+This command deletes the Endpoint (there is no way to "disable" it). Restoring the Endpoint should be as simple as rerunning your `terraform apply` command.
+
+### Shared Service Account Authentication (Optional)
+
+If you choose to create and use the shared service account to access your SageMaker Endpoint(s), you can find the relevant access key and secret in the Terraform output. You can insert this snippet into a Jupyter Notebook to authenticate using the shaerd service account.
+
+1. Grab the SENSITIVE secret access key from Terraform:
+
+  ```shell
+  % terraform output -json shared_service_user_secret_access_key
+  {"esm-shared-invoke-dev":"MJRULedmIbkqiYPZAd8inWwxlGpTQulgin/DgP27"}
+  ```
+
+2. Use in a Jupyter Notebook or elsewhere (being sure to take care of this secret!):
+
+  ```python
+  import os
+  import boto3
+
+  AWS_REGION="us-east-2"
+  AWS_ACCESS_KEY_ID="AKIAYM7POJJIECYZ5LJU"
+  AWS_SECRET_ACCESS_KEY="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"
+
+  session = boto3.setup_default_session(
+      aws_access_key_id=AWS_ACCESS_KEY_ID,
+      aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+      region_name=AWS_REGION
+  )
+  ```
+
+### Module Directory Tree
 
 ```
 terraform-aws-esm-partner/
@@ -234,44 +270,6 @@ flowchart TD
     B6 --> O4[Output: shared_service_user_access_key_id]
     B6 --> O5[Output: shared_service_user_secret_access_key]
 ```
-
-### Cost Control
-
-AWS costs are incurred continuously when the SageMaker Endpoints are configured. Use the `endpoint_name` to delete the SageMaker Endpoint and deallocate the EC2 instance(s):
-
-```shell
-aws sagemaker delete-endpoint --endpoint-name "Endpoint-ESMC-300M-1-2df2c3dd"
-```
-
-This command deletes the Endpoint (there is no way to "disable" it). Restoring the Endpoint should be as simple as rerunning your `terraform apply` command.
-
-### Shared Service Account Authentication (Optional)
-
-If you choose to create and use the shared service account to access your SageMaker Endpoint(s), you can find the relevant access key and secret in the Terraform output. You can insert this snippet into a Jupyter Notebook to authenticate using the shaerd service account.
-
-1. Grab the SENSITIVE secret access key from Terraform:
-
-  ```shell
-  % terraform output -json shared_service_user_secret_access_key
-  {"esm-shared-invoke-dev":"MJRULedmIbkqiYPZAd8inWwxlGpTQulgin/DgP27"}
-  ```
-
-2. Use in a Jupyter Notebook or elsewhere (being sure to take care of this secret!):
-
-  ```python
-  import os
-  import boto3
-
-  AWS_REGION="us-east-2"
-  AWS_ACCESS_KEY_ID="AKIAYM7POJJIECYZ5LJU"
-  AWS_SECRET_ACCESS_KEY="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"
-
-  session = boto3.setup_default_session(
-      aws_access_key_id=AWS_ACCESS_KEY_ID,
-      aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-      region_name=AWS_REGION
-  )
-  ```
 
 ## License
 
