@@ -87,4 +87,4 @@ esm-partner/
 
 ## Contact
 
-If you have any questions or suggestions, please open an issue on the GitHub repository. You can also reach me by [email](mailto:cram%40evolutionaryscale.ai).
+If you have any questions or suggestions, please open an issue on the GitHub repository. You can also reach me by [email](mailto:support%40evolutionaryscale.ai).

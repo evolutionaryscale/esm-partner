@@ -284,4 +284,4 @@ See the examples in the [examples/](./examples/) directory:
 
 ## Contributing
 
-Contributions, improvements, and feedback are welcome. Please reach out by email to contact us.
+Contributions, improvements, and feedback are welcome. Please reach out by [email](mailto:support%40evolutionaryscale.ai) to contact us.
