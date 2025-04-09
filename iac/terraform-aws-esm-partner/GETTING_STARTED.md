@@ -52,7 +52,7 @@ First you'll need to set up your AWS and local environment.
    ```bash
    git clone git@github.com:evolutionaryscale/esm-partner.git
    cd esm-partner/iac/terraform-aws-esm-partner
-    ```
+   ```
 
 5. **Choose and Copy an Example Configuration**
 
@@ -82,7 +82,7 @@ First you'll need to set up your AWS and local environment.
 
     - Generate `models.yaml`
 
-        If you have not done so already, follow the instructions to [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account.
+        If you have not done so already, follow the instructions to [Subscribe to our AWS SageMaker model](./GETTING_STARTED.md#sagemaker-model-subscription) to make it available within your AWS account.
 
         Each examples directory has a `models.yaml` file meant to be modified based on your needs and subscription. You should modify the version you have in your working directory, as the `terraform` command will use the version in its current working directory (CWD) by default.
 
@@ -171,7 +171,7 @@ The error might look like this:
 ╵
 ```
 
-1. Make sure you have followed the instructions to [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account. Use the Model Package ARN from the subscription process to [configure your `models.yaml`](#modelsyaml-configuration) file, and select the model in your terraform file.
+1. Make sure you have followed the instructions to [Subscribe to our AWS SageMaker model](./GETTING_STARTED.md#sagemaker-model-subscription) to make it available within your AWS account. Use the Model Package ARN from the subscription process to [configure your `models.yaml`](#modelsyaml-configuration) file, and select the model in your terraform file.
 
 2. If you have already subscribed, double check that the Model Package ARN and other fields in the `models.yaml` file match the values provided in the SageMaker AI console.
 
@@ -205,7 +205,7 @@ LogitsOutput(logits=ForwardTrackData(sequence=tensor([[-38.0000, -38.0000, -38.0
 
 This file contains the model catalog that defines all the models available for deployment in your environment using the esm-partner Terraform module. You will need to supply your own `models.yaml` file to use your SageMaker Model subscription. This configuration gives you control over which models are available, and how they are deployed. It also allows you to update parameters such as instance types, model package ARNs, and more.
 
-If you have not done so already, follow the instructions to [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account. Note down the Model Name and Model Package ARN as you go through this process.
+If you have not done so already, follow the instructions to [Subscribe to our AWS SageMaker model](./GETTING_STARTED.md#sagemaker-model-subscription) to make it available within your AWS account. Note down the Model Name and Model Package ARN as you go through this process.
 
 ## File Location
 
