@@ -148,6 +148,55 @@ rm -Rf .terraform .terraform.lock.hcl terraform.tfstate*    # remove local terra
 
 All AWS configuration and state should be restored to initial conditions. It is safe to delete the dedicated AWS account.
 
+## Troubleshooting
+
+### Terraform is complaining that I need a provider
+
+You may be trying to run `terraform` commands from within the module root. You need to copy an example into a working directory and run the commands from there. The example folders each have a `esm_partner.tf` file that provides the AWS provider configuration.
+
+### SageMaker complains "Caller is not subscribed to the marketplace offering."
+
+The error might look like this:
+
+```
+╷
+│ Error: creating SageMaker AI model: operation error SageMaker: CreateModel, https response error StatusCode: 400, RequestID: 46092343-bee7-4712-88cb-5dea5e653a2b, api error ValidationException: Caller is not subscribed to the marketplace offering.
+│ 
+│   with module.esm_partner.aws_sagemaker_model.model["prototype_model"],
+│   on .terraform/modules/esm_partner/iac/terraform-aws-esm-partner/main.tf line 57, in resource "aws_sagemaker_model" "model":
+│   57: resource "aws_sagemaker_model" "model" {
+│ 
+╵
+```
+
+1. Make sure you have followed the instructions to [Subscribe to our AWS SageMaker model](./SETUP_CONFIG.md#sagemaker-model-subscription) to make it available within your AWS account. Use the Model Package ARN from the subscription process to [configure your `models.yaml`](#modelsyaml-configuration) file, and select the model in your terraform file.
+
+2. If you have already subscribed, double check that the Model Package ARN and other fields in the `models.yaml` file match the values provided in the SageMaker AI console.
+
+### Jupyter Notebook returns a TypeError
+
+The error might look like this:
+
+```
+TypeError: ESM3SageMakerClient._post() got an unexpected keyword argument 'returned_bytes'
+```
+
+Try pinning the `esm` Pypi module version:
+
+```python
+! pip install esm==3.1.1
+```
+
+Correct output starts like this:
+
+```python
+LogitsOutput(logits=ForwardTrackData(sequence=tensor([[-38.0000, -38.0000, -38.0000,  12.6250,  21.6250,  22.3750,  22.0000,
+          21.8750,  21.5000,  21.6250,  21.7500,  21.2500,  20.7500,  21.5000,
+          21.8750,  20.8750,  20.7500,  20.2500,  20.3750,  20.2500,  21.7500,
+          19.8750,  19.8750,  19.3750,  18.3750,   1.3750,  -1.5781,  -3.8750,
+[...]
+```
+
 ---
 
 # `models.yaml` Configuration
